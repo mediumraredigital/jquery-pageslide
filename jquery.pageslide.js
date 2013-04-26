@@ -12,7 +12,8 @@
 ;(function($){
     // Convenience vars for accessing elements
     var $body = $('body'),
-        $pageslide = $('#pageslide');
+        $pageslide = $('#pageslide'),
+        $pageslideContent;
     
     var _sliding = false,   // Mutex to assist closing only once
         _lastCaller;        // Used to keep track of last element to trigger pageslide
@@ -30,8 +31,18 @@
     function _load( url, useIframe ) {
         // Are we loading an element from the page or a URL?
         if ( url.indexOf("#") === 0 ) {                
-            // Load a page element                
-            $(url).clone(true,true).appendTo( $pageslide.empty() ).show();
+            // Load a page element
+
+            if( $pageslideContent == undefined ){
+
+                $pageslideContent = $(url).clone(true).hide();
+
+            } else if ( $(url).attr('id') != $pageslideContent.attr('id') ) {
+
+                $pageslideContent.appendTo($body);
+                $pageslideContent = $(url).clone(true).hide();
+            }
+            $(url).appendTo( $pageslide.empty() ).show();
         } else {
             // Load a URL. Into an iframe?
             if( useIframe ) {
@@ -179,6 +190,7 @@
             _sliding = false;
             if( typeof callback != 'undefined' ) callback();
         });
+
     }
 	
 	/* Events */
